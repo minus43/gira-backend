@@ -1,4 +1,4 @@
-package com.example.girauser.util;
+package com.example.girauser.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         // Map 생성 및 데이터 추가
         Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("message", "NO_LOGIN");
+        responseMap.put("message", "unauthorized");
         responseMap.put("code", "401");
 
         // Map을 JSON 문자열로 변환

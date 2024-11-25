@@ -1,8 +1,12 @@
 package com.example.giragateway.filter;
 
+import com.example.giragateway.config.PathConfig;
 import com.example.giragateway.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -17,6 +21,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 
 @Component
@@ -24,8 +29,7 @@ import java.nio.charset.StandardCharsets;
 public class JwtAuthenticateFilter extends AbstractGatewayFilterFactory<JwtAuthenticateFilter.Config> {
 
     //이거 통과하는 경로가 2개 이상일 경우 존재, 수정 필요
-    @Value("${excluded-paths}")
-    private String excludedPaths;
+    private final PathConfig pathConfig;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -36,8 +40,9 @@ public class JwtAuthenticateFilter extends AbstractGatewayFilterFactory<JwtAuthe
         // Example of a configurable field
     }
 
-    public JwtAuthenticateFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticateFilter(PathConfig pathConfig, JwtUtil jwtUtil) {
         super(Config.class); // Config 클래스 설정
+        this.pathConfig = pathConfig;
         this.jwtUtil = jwtUtil;
     }
 
@@ -48,7 +53,7 @@ public class JwtAuthenticateFilter extends AbstractGatewayFilterFactory<JwtAuthe
 
             // 인증이 필요 없는 경로 확인
             String path = exchange.getRequest().getURI().getPath();
-            log.info("excluded path: {}", excludedPaths);
+            log.info("excluded path: {}", pathConfig.getExcludedPaths());
             log.info("path: {}", path);
             if (isExcludedPath(path)) {
                 return chain.filter(exchange); // 필터 건너뛰기
@@ -81,6 +86,6 @@ public class JwtAuthenticateFilter extends AbstractGatewayFilterFactory<JwtAuthe
     }
 
     private boolean isExcludedPath(String path) {
-        return pathMatcher.match(excludedPaths, path);
+        return pathConfig.getExcludedPaths().stream().anyMatch(excluedPath -> path.equals(excluedPath));
     }
 }
