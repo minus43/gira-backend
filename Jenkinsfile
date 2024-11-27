@@ -72,20 +72,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        // **빌드 실패 시 이메일 알림**
-        failure {
-            mail to: 'minu425854@gmail.com', // 실패 시 알림을 받을 이메일 주소
-                 subject: "Jenkins Build Failed: ${currentBuild.fullDisplayName}", // 이메일 제목
-                 body: "빌드에 실패했습니다. Jenkins에서 로그를 확인해주세요." // 이메일 본문
-        }
-
-        // **빌드 성공 시 이메일 알림**
-        success {
-            mail to: 'minu425854@gmail.com', // 성공 시 알림을 받을 이메일 주소
-                 subject: "Jenkins Build Succeeded: ${currentBuild.fullDisplayName}", // 이메일 제목
-                 body: "빌드가 성공적으로 완료되었습니다. Jenkins에서 로그를 확인하세요." // 이메일 본문
-        }
-    }
 }
