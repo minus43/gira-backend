@@ -5,8 +5,8 @@ pipeline {
         REGION = "ap-northeast-2" // AWS 리전 (서울 리전)
         ECR_URL = "361769560582.dkr.ecr.ap-northeast-2.amazonaws.com/gira-repo" // AWS ECR URL
         DEPLOY_HOSTS = "172.31.24.122" // 배포할 EC2 인스턴스의 프라이빗 IP 주소
-        SERVICES = ["gira-eureka"] // 배포할 마이크로서비스 목록 (배열로 수정)
-        PORTS = ["8761"] // 각 서비스별 포트 (배열로 수정)
+        SERVICES = "gira-eureka" // 쉼표로 구분된 서비스 목록
+        PORTS = "8761" // 쉼표로 구분된 포트 목록
     }
 
     stages {
@@ -23,7 +23,10 @@ pipeline {
                 withAWS(region: "${REGION}", credentials: "aws-key") { // AWS 자격 증명으로 ECR에 로그인
                     script {
                         // SERVICES 배열에 정의된 각 마이크로서비스에 대해 반복하며 Docker 이미지를 빌드하고 푸시
-                        SERVICES.each { service ->
+                        def services = SERVICES.split(',') // 쉼표로 구분된 서비스 목록을 배열로 변환
+                        def ports = PORTS.split(',') // 쉼표로 구분된 포트 목록을 배열로 변환
+
+                        services.eachWithIndex { service, index ->
                             stage("Build and Push ${service}") {
                                 sh """
                                     aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
@@ -43,10 +46,10 @@ pipeline {
             steps {
                 // 각 서비스별로 EC2에 배포를 수행
                 publishOverSsh(
-                    publishers: SERVICES.collect { service ->
-                        def index = SERVICES.indexOf(service) // 현재 서비스의 인덱스를 가져옵니다.
-                        def host = DEPLOY_HOSTS.split(',')[index].trim() // 해당 인덱스에 맞는 EC2 인스턴스 IP를 선택합니다.
-                        def port = PORTS[index] // 서비스에 맞는 포트를 가져옵니다.
+                    publishers: SERVICES.split(',').collect { service ->
+                        def index = SERVICES.split(',').indexOf(service) // 서비스 인덱스를 찾음
+                        def host = DEPLOY_HOSTS.split(',')[index].trim() // EC2 인스턴스 IP
+                        def port = PORTS.split(',')[index] // 서비스에 맞는 포트
 
                         sshPublisher(
                             configName: "gira-eureka-${host}", // 미리 설정된 SSH 서버 구성 이름
