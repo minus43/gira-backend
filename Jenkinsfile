@@ -26,9 +26,9 @@ pipeline {
                         for (service in SERVICES) {
                             stage("Build and Push ${service}") {
                                 sh """
-                                    aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL} // ECR에 로그인
-                                    docker build -t ${service}:${BUILD_NUMBER} ./${service} // 각 서비스별로 Docker 이미지 빌드
-                                    docker tag ${service}:${BUILD_NUMBER} ${ECR_URL}/${service}:${BUILD_NUMBER} // ECR에 푸시할 이미지 태그 지정
+                                    aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
+                                    docker build -t ${service}:${BUILD_NUMBER} ./${service}
+                                    docker tag ${service}:${BUILD_NUMBER} ${ECR_URL}/${service}:${BUILD_NUMBER}
                                     docker push ${ECR_URL}/${service}:${BUILD_NUMBER} // ECR에 Docker 이미지 푸시
                                 """
                             }
