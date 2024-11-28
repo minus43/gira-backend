@@ -25,6 +25,7 @@ COPY . /app
 
 # Gradle 빌드를 수행합니다.
 # 테스트는 실행하지 않도록 설정(-x test).
+RUN ls-a
 RUN ./gradlew clean build -x test
 
 # 실행 스테이지
