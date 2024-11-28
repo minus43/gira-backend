@@ -5,8 +5,8 @@ pipeline {
         REGION = "ap-northeast-2" // AWS 리전 (서울 리전)
         ECR_URL = "361769560582.dkr.ecr.ap-northeast-2.amazonaws.com/gira-repo" // AWS ECR URL
         DEPLOY_HOSTS = "172.31.24.122" // 배포할 EC2 인스턴스의 프라이빗 IP 주소
-        SERVICES = "gira-eureka" // 쉼표로 구분된 서비스 목록
-        PORTS = "8761" // 쉼표로 구분된 포트 목록
+        SERVICES = "gira-eureka" // 현재 빌드 및 배포할 서비스
+        PORTS = "8761" // 현재 서비스의 포트
     }
 
     stages {
@@ -18,21 +18,18 @@ pipeline {
         }
 
         // **2단계: Docker 이미지 빌드 및 ECR 푸시**
-        stage('Build and Push Docker Images') {
+        stage('Build and Push Docker Image') {
             steps {
                 withAWS(region: "${REGION}", credentials: "aws-key") { // AWS 자격 증명으로 ECR에 로그인
                     script {
-                        // SERVICES 배열에 정의된 각 마이크로서비스에 대해 반복하며 Docker 이미지를 빌드하고 푸시
-                        def services = SERVICES.split(',') // 쉼표로 구분된 서비스 목록을 배열로 변환
-                        def ports = PORTS.split(',') // 쉼표로 구분된 포트 목록을 배열로 변환
-
-                        services.eachWithIndex { service, index ->
+                        def services = SERVICES.split(',') // 서비스 목록을 배열로 변환
+                        services.each { service ->
                             stage("Build and Push ${service}") {
                                 sh """
                                     aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
                                     docker build -t gira-repo:${service}-${BUILD_NUMBER} ./${service}
-                                    docker tag gira-repo:${service}-${BUILD_NUMBER} ${ECR_URL}:gira-${service}-${BUILD_NUMBER}
-                                    docker push ${ECR_URL}:gira-${service}-${BUILD_NUMBER}
+                                    docker tag gira-repo:${service}-${BUILD_NUMBER} ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                    docker push ${ECR_URL}:${service}-${BUILD_NUMBER}
                                 """
                             }
                         }
@@ -42,29 +39,35 @@ pipeline {
         }
 
         // **3단계: EC2 인스턴스에 서비스 배포**
-        stage('Deploy to AWS EC2 VMs') {
+        stage('Deploy to AWS EC2') {
             steps {
-                sshPublisher(
-                    publishers: [
-                        sshPublisherDesc(
-                            configName: "your-ssh-config-name", // Jenkins 설정에 등록된 SSH 서버 이름
-                            transfers: [
-                                sshTransfer(
-                                    sourceFiles: "target/*.jar", // 전송할 로컬 파일 경로
-                                    remoteDirectory: "/home/ec2-user/deploy", // 원격 디렉토리
-                                    execCommand: """
-                                        docker pull your-ecr-url/your-image:${BUILD_NUMBER}
-                                        docker stop your-container || true
-                                        docker rm your-container || true
-                                        docker run -d -p 8080:8080 --name your-container your-ecr-url/your-image:${BUILD_NUMBER}
-                                    """
+                script {
+                    def services = SERVICES.split(',')
+                    def ports = PORTS.split(',')
+
+                    services.eachWithIndex { service, index ->
+                        sshPublisher(
+                            publishers: [
+                                sshPublisherDesc(
+                                    configName: "gira-eureka", // Jenkins에 정의된 SSH 서버 설정 이름
+                                    transfers: [
+                                        sshTransfer(
+                                            sourceFiles: "", // 파일 전송은 필요하지 않음
+                                            execCommand: """
+                                                docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                                docker stop ${service} || true
+                                                docker rm ${service} || true
+                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                            """
+                                        )
+                                    ],
+                                    usePromotionTimestamp: false,
+                                    verbose: true
                                 )
-                            ],
-                            usePromotionTimestamp: false, // 프로모션 타임스탬프 비활성화
-                            verbose: true // 상세 로그 활성화
+                            ]
                         )
-                    ]
-                )
+                    }
+                }
             }
         }
     }
