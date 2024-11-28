@@ -14,7 +14,7 @@ COPY settings.gradle /app/
 
 # Gradle Wrapper 실행 권한을 추가합니다.
 # 실행 권한이 없으면 Permission Denied 오류가 발생합니다.
-RUN chmod ./gradlew
+RUN chmod ./gradlew + x
 RUN ls -l gradlew
 
 
@@ -27,7 +27,7 @@ COPY . /app
 
 # Gradle로 빌드 작업을 수행합니다.
 # 테스트는 제외하여 빌드 속도를 향상시킵니다.
-RUN ./gradlew clean build
+RUN ./gradlew clean build -x test
 
 # 두 번째 스테이지: 실행 영역
 # 실행을 위한 JDK 이미지를 사용합니다. JDK가 필요 없는 경우 JRE로 변경 가능합니다.
