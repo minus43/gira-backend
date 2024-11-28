@@ -13,7 +13,7 @@ COPY settings.gradle /app/
 
 # Gradle 종속성 캐싱 (build.gradle, settings.gradle 등...에 변경이 없으면)
 # 기존에 가지고 있던 내용을 그대로 사용함.
-RUN sudo chmod +x gradlew
+RUN chmod +x gradlew
 RUN ./gradlew dependencies --no-daemon
 
 # gradle wrapper로 빌드
