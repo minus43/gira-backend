@@ -44,34 +44,26 @@ pipeline {
         // **3단계: EC2 인스턴스에 서비스 배포**
         stage('Deploy to AWS EC2 VMs') {
             steps {
-                // 각 서비스별로 EC2에 배포를 수행
                 publishOverSsh(
-                    publishers: SERVICES.split(',').toList().collect { service ->
-                        def servicesList = SERVICES.split(',').toList() // Java 배열을 Groovy List로 변환
-                        def index = servicesList.indexOf(service) // Groovy List에서 indexOf 사용
-                        def host = DEPLOY_HOSTS.split(',')[index].trim() // EC2 인스턴스 IP
-                        def port = PORTS.split(',')[index] // 서비스에 맞는 포트
-
+                    publishers: [
                         sshPublisher(
-                            configName: "gira-eureka-${host}", // 미리 설정된 SSH 서버 구성 이름
+                            configName: "your-ssh-config-name", // Jenkins에 설정된 SSH 서버 이름
                             transfers: [
                                 sshTransfer(
-                                    sourceFiles: "${service}/build/libs/*.jar", // 빌드된 JAR 파일 경로
-                                    removePrefix: "${service}/build/libs", // 파일 경로에서 접두어를 제거하여 원격 디렉토리 구조 유지
-                                    remoteDirectory: "/var/www/${service}", // 원격 서버의 배포 디렉토리
+                                    sourceFiles: "target/*.jar", // 배포할 파일 경로
+                                    remoteDirectory: "/home/ec2-user/deploy", // 원격 서버의 배포 디렉토리
                                     execCommand: """
-                                        aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL} // ECR 로그인
-                                        docker pull ${ECR_URL}/${service}:${BUILD_NUMBER} // 최신 Docker 이미지 풀
-                                        docker stop ${service} || true // 기존 컨테이너가 있으면 중지
-                                        docker rm ${service} || true // 기존 컨테이너가 있으면 제거
-                                        docker run -d -p ${port}:${port} --name ${service} ${ECR_URL}/${service}:${BUILD_NUMBER} // 새로운 컨테이너 실행 (각 서비스마다 포트가 다름)
+                                        docker pull your-ecr-url/your-image:${BUILD_NUMBER}
+                                        docker stop your-container || true
+                                        docker rm your-container || true
+                                        docker run -d -p 8080:8080 --name your-container your-ecr-url/your-image:${BUILD_NUMBER}
                                     """
                                 )
                             ],
                             usePromotionTimestamp: false, // 프로모션 타임스탬프 사용 안 함
                             verbose: true // 상세 로그 출력
                         )
-                    }
+                    ]
                 )
             }
         }
