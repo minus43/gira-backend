@@ -46,8 +46,9 @@ pipeline {
             steps {
                 // 각 서비스별로 EC2에 배포를 수행
                 publishOverSsh(
-                    publishers: SERVICES.split(',').collect { service ->
-                        def index = SERVICES.split(',').indexOf(service) // 서비스 인덱스를 찾음
+                    publishers: SERVICES.split(',').toList().collect { service ->
+                        def servicesList = SERVICES.split(',').toList() // Java 배열을 Groovy List로 변환
+                        def index = servicesList.indexOf(service) // Groovy List에서 indexOf 사용
                         def host = DEPLOY_HOSTS.split(',')[index].trim() // EC2 인스턴스 IP
                         def port = PORTS.split(',')[index] // 서비스에 맞는 포트
 
