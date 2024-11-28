@@ -54,6 +54,7 @@ pipeline {
                                         sshTransfer(
                                             sourceFiles: "", // 파일 전송은 필요하지 않음
                                             execCommand: """
+                                                aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 361769560582.dkr.ecr.ap-northeast-2.amazonaws.com
                                                 docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
