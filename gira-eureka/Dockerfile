@@ -14,7 +14,7 @@ COPY settings.gradle /app/
 
 # Gradle Wrapper 실행 권한을 추가합니다.
 # 실행 권한이 없으면 Permission Denied 오류가 발생합니다.
-RUN chmod ./gradlew + x
+RUN chmod +x ./gradlew
 RUN ls -l gradlew
 
 
