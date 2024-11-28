@@ -16,6 +16,7 @@ COPY settings.gradle /app/
 # 실행 권한이 없으면 Permission Denied 오류가 발생합니다.
 RUN chmod +x gradlew
 RUN ls -l gradlew
+RUN file graclew
 
 # Gradle 종속성을 다운로드합니다.
 # 종속성 캐싱이 가능하도록 빌드 스크립트가 변경되지 않은 경우 이전 데이터를 재사용합니다.
