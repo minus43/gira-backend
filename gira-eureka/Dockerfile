@@ -27,7 +27,7 @@ COPY . /app
 
 # Gradle로 빌드 작업을 수행합니다.
 # 테스트는 제외하여 빌드 속도를 향상시킵니다.
-RUN ls -l gradlew
+RUN whoami
 RUN ./gradlew clean build -x test
 
 # 두 번째 스테이지: 실행 영역
