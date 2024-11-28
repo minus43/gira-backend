@@ -44,14 +44,14 @@ pipeline {
         // **3단계: EC2 인스턴스에 서비스 배포**
         stage('Deploy to AWS EC2 VMs') {
             steps {
-                publishOverSsh(
+                sshPublisher(
                     publishers: [
-                        sshPublisher(
-                            configName: "your-ssh-config-name", // Jenkins에 설정된 SSH 서버 이름
+                        sshPublisherDesc(
+                            configName: "your-ssh-config-name", // Jenkins 설정에 등록된 SSH 서버 이름
                             transfers: [
                                 sshTransfer(
-                                    sourceFiles: "target/*.jar", // 배포할 파일 경로
-                                    remoteDirectory: "/home/ec2-user/deploy", // 원격 서버의 배포 디렉토리
+                                    sourceFiles: "target/*.jar", // 전송할 로컬 파일 경로
+                                    remoteDirectory: "/home/ec2-user/deploy", // 원격 디렉토리
                                     execCommand: """
                                         docker pull your-ecr-url/your-image:${BUILD_NUMBER}
                                         docker stop your-container || true
@@ -60,8 +60,8 @@ pipeline {
                                     """
                                 )
                             ],
-                            usePromotionTimestamp: false, // 프로모션 타임스탬프 사용 안 함
-                            verbose: true // 상세 로그 출력
+                            usePromotionTimestamp: false, // 프로모션 타임스탬프 비활성화
+                            verbose: true // 상세 로그 활성화
                         )
                     ]
                 )
