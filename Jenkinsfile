@@ -30,9 +30,9 @@ pipeline {
                             stage("Build and Push ${service}") {
                                 sh """
                                     aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-                                    docker build -t ${service}:${BUILD_NUMBER} ./${service}
-                                    docker tag ${service}:${BUILD_NUMBER} ${ECR_URL}/${service}:${BUILD_NUMBER}
-                                    docker push ${ECR_URL}/${service}:${BUILD_NUMBER}
+                                    docker build -t gira-repo:${service}-${BUILD_NUMBER} ./${service}
+                                    docker tag gira-repo:${service}-${BUILD_NUMBER} ${ECR_URL}:gira-${service}-${BUILD_NUMBER}
+                                    docker push ${ECR_URL}:gira-${service}-${BUILD_NUMBER}
                                 """
                             }
                         }
