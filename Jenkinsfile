@@ -30,6 +30,7 @@ pipeline {
                                     docker build -t gira-repo ./${service}
                                     docker tag gira-repo:latest ${ECR_URL}:${service}-${BUILD_NUMBER}
                                     docker push ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                    docker system prune -f
                                 """
                             }
                         }
@@ -60,7 +61,7 @@ pipeline {
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
                                                 docker run --network ${service} -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
-                                                docker image prune -a -f
+                                                docker system prune -f
                                             """
                                         )
                                     ],
