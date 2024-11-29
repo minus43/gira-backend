@@ -54,6 +54,7 @@ pipeline {
                                         sshTransfer(
                                             sourceFiles: "",
                                             execCommand: """
+                                                aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
                                                 docker network ls | grep ${service} || docker network create ${service}
                                                 docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker stop ${service} || true
