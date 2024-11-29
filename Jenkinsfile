@@ -56,11 +56,10 @@ pipeline {
                                             sourceFiles: "",
                                             execCommand: """
                                                 aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-                                                docker network ls | grep ${service} || docker network create ${service}
                                                 docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
-                                                docker run --network ${service} -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker system prune -f
                                             """
                                         )
