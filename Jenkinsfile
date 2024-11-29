@@ -58,7 +58,6 @@ pipeline {
                                                 docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
-                                                docker images | grep ${service} | grep -v ${BUILD_NUMBER} | awk '{print $3}' | xargs docker rmi -f || true
                                                 docker run --network ${service} -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
                                             """
                                         )
