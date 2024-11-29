@@ -45,19 +45,21 @@ pipeline {
                     def services = SERVICES.split(',')
                     def ports = PORTS.split(',')
 
-                    services.eachWithIndex { service, index ->
+                     services.eachWithIndex { service, index ->
                         sshPublisher(
                             publishers: [
                                 sshPublisherDesc(
-                                    configName: "gira-eureka", // Jenkins에 정의된 SSH 서버 설정 이름
+                                    configName: service, // 서비스 이름을 SSH 서버 이름으로 사용
                                     transfers: [
                                         sshTransfer(
-                                            sourceFiles: "", // 파일 전송은 필요하지 않음
+                                            sourceFiles: "",
                                             execCommand: """
+                                                docker network ls | grep ${service} || docker network create ${service}
                                                 docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
-                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                                docker images | grep ${service} | grep -v ${BUILD_NUMBER} | awk '{print $3}' | xargs docker rmi -f || true
+                                                docker run --network ${service} -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
                                             """
                                         )
                                     ],
