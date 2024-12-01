@@ -61,6 +61,7 @@ pipeline {
                                                 docker rm ${service} || true
                                                 docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
                                                 docker system prune -f
+                                                docker rmi $(docker images -q)
                                             """
                                         )
                                     ],
