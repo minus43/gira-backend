@@ -28,8 +28,8 @@ pipeline {
                                 sh """
                                     aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
                                     docker build -t gira-repo ./${service}
-                                    docker tag gira-repo:latest ${ECR_URL}:${service}-${BUILD_NUMBER}
-                                    docker push ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                    docker tag gira-repo:latest ${ECR_URL}:${service}
+                                    docker push ${ECR_URL}:${service}
                                     docker system prune -f
                                 """
                             }
@@ -56,12 +56,12 @@ pipeline {
                                             sourceFiles: "",
                                             execCommand: """
                                                 aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-                                                docker pull ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                                docker pull ${ECR_URL}:${service}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
-                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}-${BUILD_NUMBER}
+                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}
                                                 docker system prune -f
-                                                docker rmi $(docker images -q)
+                                                docker image prune -f
                                             """
                                         )
                                     ],
