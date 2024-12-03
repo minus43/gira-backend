@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: gira-gateway
+  profiles:
+    active: native
+
+  config:
+    import: configserver:http://172.31.42.150:8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httpexchage, busrefresh
+
+
