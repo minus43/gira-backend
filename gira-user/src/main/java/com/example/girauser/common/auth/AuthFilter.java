@@ -1,4 +1,4 @@
-package com.example.girauser.common;
+package com.example.girauser.common.auth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

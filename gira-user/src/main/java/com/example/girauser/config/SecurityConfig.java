@@ -1,7 +1,7 @@
 package com.example.girauser.config;
 
-import com.example.girauser.common.AuthFilter;
-import com.example.girauser.common.CustomAuthenticationEntryPoint;
+import com.example.girauser.common.auth.AuthFilter;
+import com.example.girauser.common.auth.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -56,8 +56,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> {
                     auth
-                            .requestMatchers("/user/signin", "/user/signup",
-                                    "/user/refresh", "/user/jointeam", "/healthcheck" ).permitAll()
+                            .requestMatchers("/signin", "/signup",
+                                    "/refreshtoken", "/jointeam","/actuator/**" ).permitAll()
                             .requestMatchers(("/**")).access(
                                     new WebExpressionAuthorizationManager("hasIpAddress('127.0.0.1') or hasIpAddress('::1')")
                             )
@@ -82,7 +82,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
     }
 

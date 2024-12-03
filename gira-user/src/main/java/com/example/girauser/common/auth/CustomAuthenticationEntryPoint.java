@@ -1,4 +1,4 @@
-package com.example.girauser.common;
+package com.example.girauser.common.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
