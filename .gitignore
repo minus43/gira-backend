@@ -1,7 +1,4 @@
-application-local.yaml
-application-prod.yaml
-application.yaml
-!gira-eureka/src/main/resources/application.yaml
+
 
 .gradle
 build/
