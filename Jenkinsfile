@@ -6,7 +6,7 @@ pipeline {
         ECR_URL = "361769560582.dkr.ecr.ap-northeast-2.amazonaws.com/gira-repo" // AWS ECR URL
         DEPLOY_HOSTS = "172.31.24.122,172.31.26.199,172.31.19.98" // 배포할 EC2 인스턴스의 프라이빗 IP 주소
         SERVICES = "gira-eureka,gira-gateway,gira-user" // 현재 빌드 및 배포할 서비스
-        PORTS = "8761,8181,8183" // 현재 서비스의 포트
+        PORTS = "8761,8181,8182" // 현재 서비스의 포트
     }
 
     stages {
