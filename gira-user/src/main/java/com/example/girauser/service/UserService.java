@@ -122,6 +122,7 @@ public class UserService {
                 new EntityNotFoundException("User with email " + email.get("email") + " not found"));
 
         Object refreshToken = redisTemplate.opsForValue().get(email.get("email"));
+        log.info("refresh token: {}", refreshToken);
         if(refreshToken != null){
             String newAccessToken = jwtTokenProvider.createToken(user.getEmail(),user.getRole());
             response.addHeader("Authorization", "Bearer " + newAccessToken);
