@@ -59,7 +59,10 @@ pipeline {
                                                 docker pull ${ECR_URL}:${service}
                                                 docker stop ${service} || true
                                                 docker rm ${service} || true
-                                                docker run -d -p ${ports[index]}:${ports[index]} --name ${service} ${ECR_URL}:${service}
+                                                docker run -d \
+                                                    -p ${ports[index]}:${ports[index]} \
+                                                    --network host
+                                                    --name ${service} ${ECR_URL}:${service}
                                                 docker system prune -f
                                                 docker image prune -f
                                             """
