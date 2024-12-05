@@ -58,9 +58,6 @@ public class SecurityConfig {
                     auth
                             .requestMatchers("/signin", "/signup",
                                     "/refreshtoken", "/jointeam","/actuator/**" ).permitAll()
-                            .requestMatchers(("/**")).access(
-                                    new WebExpressionAuthorizationManager("hasIpAddress('127.0.0.1') or hasIpAddress('::1')")
-                            )
                             .anyRequest().authenticated();
                 })
                         .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
