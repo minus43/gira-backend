@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: gira-board
+  profiles:
+    #    default: dev
+    default: local
+
+  config:
+    #    import: configserver:http://172.31.42.150:8888
+    import: configserver:http://localhost:8888
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httpexchange, busrefresh
