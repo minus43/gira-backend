@@ -64,7 +64,7 @@ pipeline {
                                                     --network host \
                                                     --name ${service} ${ECR_URL}:${service}
                                                 docker system prune -f
-                                                docker image prune -f
+                                                docker image prune -a -f
                                             """
                                         )
                                     ],
