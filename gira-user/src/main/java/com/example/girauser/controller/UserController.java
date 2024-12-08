@@ -9,6 +9,7 @@ import com.example.girauser.entity.Team;
 import com.example.girauser.entity.User;
 import com.example.girauser.service.TeamService;
 import com.example.girauser.service.UserService;
+import com.example.girauser.util.BoardFeignClient;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ public class UserController {
 
     private final UserService userService;
     private final TeamService teamService;
+    private final BoardFeignClient boardFeignClient;
 
     // 유저 관련 부분들
 
@@ -64,8 +67,8 @@ public class UserController {
     public ResponseEntity<?> delete(HttpServletRequest request) {
         userService.delete(request);
         CommonResDto resDto
-                = new CommonResDto(HttpStatus.NO_CONTENT,"회원 탈퇴 완료", null);
-        return new ResponseEntity<>(resDto, HttpStatus.NO_CONTENT);
+                = new CommonResDto(HttpStatus.OK,"회원 탈퇴 완료", null);
+        return new ResponseEntity<>(resDto, HttpStatus.OK);
     }
 
     //액세스 토큰 갱신
@@ -96,8 +99,11 @@ public class UserController {
     @PostMapping("/maketeam")
     public ResponseEntity<?> makeTeam(@RequestBody TeamDto dto, HttpServletResponse response) {
         Team leader = teamService.makeTeam(dto, response);
+        Map<String,String> team= new HashMap<>();
+        team.put("teamName",leader.getTeamName());
+        ResponseEntity<?> makeBoard = boardFeignClient.makeBoard(team);
         CommonResDto resDto
-                = new CommonResDto(HttpStatus.CREATED, "팀 생성 완료", leader.getTeamName()+leader.getUserName()+leader.getUserRole());
+                = new CommonResDto(HttpStatus.CREATED, "팀 생성 완료", leader.getTeamName()+" "+leader.getUserName()+" "+leader.getUserRole()+" "+makeBoard.getBody());
         return new ResponseEntity<>(resDto, HttpStatus.CREATED);
     }
 
@@ -123,9 +129,16 @@ public class UserController {
     @DeleteMapping("/deleteteam")
     public ResponseEntity<?> deleteTeam(@RequestBody TeamDto dto, HttpServletRequest request) {
         Team common = teamService.deleteTeam(dto, request);
+        if(common.getUserRole().equals("LEADER")){
+            Map<String,String> team= new HashMap<>();
+            team.put("teamName",common.getTeamName());
+            ResponseEntity<?> deleteBoard = boardFeignClient.deleteBoard(team);
+            CommonResDto resDto = new CommonResDto(HttpStatus.OK,"팀 삭제 완료", null);
+            return new ResponseEntity<>(resDto, HttpStatus.OK);
+        }
         CommonResDto resDto
-                = new CommonResDto(HttpStatus.NO_CONTENT,"팀원 삭제 완료", common.getTeamName()+common.getUserName()+common.getUserRole());
-        return new ResponseEntity<>(resDto, HttpStatus.NO_CONTENT);
+                = new CommonResDto(HttpStatus.OK,"팀원 삭제 완료", common.getTeamName()+common.getUserName()+common.getUserRole());
+        return new ResponseEntity<>(resDto, HttpStatus.OK);
     }
 
     //자신이 속한 팀의 리스트 반환

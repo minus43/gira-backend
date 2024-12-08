@@ -93,6 +93,8 @@ public class TeamService {
 
     public Team deleteTeam(TeamDto dto, HttpServletRequest request){
         log.info("deleteTeam");
+        log.info(request.getHeader("email"));
+        log.info(dto.toString());
         // 해당 로직을 호출하는 사람이 해당 팀의 리더가 맞는지 검증
         User leader = userRepository.findByEmail(request.getHeader("email")).orElseThrow(()->
                 new IllegalArgumentException("user not found"));
