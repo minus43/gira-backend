@@ -36,7 +36,7 @@ public class UserController {
     // 유저 관련 부분들
 
     //로그인
-    @GetMapping("/signin")
+    @PostMapping("/signin")
     public ResponseEntity<?> signIn(HttpServletResponse response, @RequestBody UserDto dto ) {
 
         HttpServletResponse result = userService.signIn(dto, response);
