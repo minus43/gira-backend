@@ -52,6 +52,11 @@ dependencies {
 
     //서버 간 통신을 도와주는 openfeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.1.RELEASE'
+
+
 }
 
 dependencyManagement {
