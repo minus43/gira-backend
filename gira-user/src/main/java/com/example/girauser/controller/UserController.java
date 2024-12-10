@@ -41,7 +41,7 @@ public class UserController {
 
         HttpServletResponse result = userService.signIn(dto, response);
         CommonResDto resDto
-                = new CommonResDto(HttpStatus.OK, "로그인 완료", result.getHeader("Authorization"));
+                = new CommonResDto(HttpStatus.OK, "로그인 완료이키 텐카이", result.getHeader("Authorization"));
         return new ResponseEntity<>(resDto, HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody UserDto dto) {
         User user = userService.signUp(dto);
-        CommonResDto resDto = new CommonResDto(HttpStatus.CREATED, "회원가입 완료", user.getId());
+        CommonResDto resDto = new CommonResDto(HttpStatus.CREATED, "회원가입 완료이키 텐카이", user.getId());
         return new ResponseEntity<>(resDto, HttpStatus.CREATED);
     }
 
