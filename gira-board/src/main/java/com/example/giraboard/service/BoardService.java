@@ -92,11 +92,11 @@ public class BoardService {
 
     public void updateUR(Map<String, List<UR>> urList) {
         List<UR> addUR = urList.get("addUR");
-        if(!addUR.isEmpty())urRepositoy.saveAll(addUR);
+        if(!addUR.isEmpty()) urRepositoy.saveAll(addUR);
         List<UR> removeUR = urList.get("removeUR");
         if(!removeUR.isEmpty())urRepositoy.deleteAll(removeUR);
         List<UR> editUR = urList.get("editUR");
-        if(!editUR.isEmpty())urRepositoy.saveAll(editUR);
+        if(!editUR.isEmpty()) urRepositoy.saveAll(editUR);
     }
 
     public BE updateBEERD(BEDto dto) {

@@ -66,9 +66,9 @@ public class TeamService {
             dto.setTitle(team.getTeamName()+"에서 당신을 초대했습니다만");
             dto.setContent("당신은 아직 gira의 회원이 아닙니다!"+"\n"
                     +"1. 먼저 아래 링크를 따라 회원가입을 진행해주세요!"+"\n"
-                    +"회원가입 링크: "+"리액트단 링크??"+"\n"
+                    +"회원가입 링크: "+"https://gira0.site/register"+"\n"
                     +"2. 회원가입을 완료하셨다면 아래 링크를 클릭해주세요!"+"\n"
-                    +"팀가입 링크: "
+                    +"팀가입 링크: http://localhost:3000/join-team?teamName=&userName=space0403@naver.com"
             );
             mailSenderService.sendSimpleMail(dto);
         }
